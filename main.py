@@ -92,11 +92,12 @@ def S(st,d,a,b,pl):
  B,T,C,E,K=st
  ic=A(st,K[T],1-T)
  if ic and d>0:d+=1
- if d<=0 and not ic:
+ q=d<=0 and not ic
+ if q:
   v=W(st)
   if v>=b:return b
   a=max(a,v)
- ms=G(st,d<=0 and not ic);ms.sort(key=lambda m:OS(st,m,RB[0]if pl==0 else 0),reverse=True)
+ ms=G(st,q);ms.sort(key=lambda m:OS(st,m,RB[0]if pl==0 else 0),reverse=True)
  bs=-I if d>0 else a;bm=0;lg=0
  for m in ms:
   ns=M(st,m)
@@ -135,15 +136,15 @@ def P(p,b):
  return json.load(U.urlopen(U.Request(os.environ["MAKEFUN_ENV_URL"]+p,data=json.dumps(b).encode(),headers={"content-type":"application/json"})))
 def CU(g):
  global GS,GN,NA
- mv=g["moves"]
+ mv=g["moves"];lm=g["legal_moves"]
  if g["game"]!=GN or len(mv)<NA:GS=ST();GN=g["game"];NA=0
  while NA<len(mv):GS=AP(GS,mv[NA]);NA+=1
- if GS[1]!=(g["colour"]!="white"):GN=-1;return g["legal_moves"][0]
+ if GS[1]!=(g["colour"]!="white"):GN=-1;return lm[0]
  try:
   m=CH(42000 if g["plies"]<100 else 15000)
-  if m is not None and UC(m)in g["legal_moves"]:return UC(m)
+  if m is not None and UC(m)in lm:return UC(m)
  except Exception:pass
- return g["legal_moves"][0]
+ return lm[0]
 def main():
  for _ in range(9999):
   try:g=P("/game",{})
