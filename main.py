@@ -131,7 +131,7 @@ def CU(g):
  L=g["legal_moves"]
  for u in g["moves"]:GS=AP(GS,u)
  try:
-  m=CH(80000);u=UC(m)if m else""
+  m=CH(150000);u=UC(m)if m else""
   if u in L:return u
  except:pass
  return L[0]
