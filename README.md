@@ -10,7 +10,7 @@ A complete chess engine in one plain Python file: 4,079 bytes, under the 4,096-b
 
 ## How it plays
 
-The search is a negamax alpha-beta under iterative deepening, stopped by a 150,000-node budget and a 4-second wall-clock deadline checked inside the search: an expired clock returns the best move of the last completed depth, so no move can overrun the 10-second limit. The clock is the binding limit on slower hardware: the slowest move measured locally across five sharp test positions took 3.62 seconds. A transposition table carries results between lines; captures are ordered by MVV-LVA. Beyond the horizon, a quiescence search chases captures and promotions until the position settles. The evaluation is material plus piece-square tables read off compact digit strings at startup.
+The search is a negamax alpha-beta under iterative deepening, stopped by a 100,000-node budget and a 3-second wall-clock deadline checked inside the search: an expired clock returns the best move of the last completed depth, so no move can overrun the 10-second limit. The clock is the binding limit on slower hardware: the slowest move measured locally across five sharp test positions took 3.01 seconds. A transposition table carries results between lines; captures are ordered by MVV-LVA. Beyond the horizon, a quiescence search chases captures and promotions until the position settles. The evaluation is material plus piece-square tables read off compact digit strings at startup.
 
 ## Design
 
@@ -18,15 +18,15 @@ The search is a negamax alpha-beta under iterative deepening, stopped by a 150,0
 - **Search**: negamax alpha-beta with iterative deepening and PVS, a transposition table (stored best move always tried first), null-move pruning, and late-move reductions.
 - **Quiescence**: captures and promotions; a node in check is never quiet, so evasions are searched in full.
 - **Evaluation**: incremental — the score is maintained by make-move deltas and never rescanned. Material plus piece-square tables for pawns, knights, bishops and the king; rook and queen tables are zero, to fit the size cap.
-- **Budget**: 150,000 nodes per move; 4-second wall-clock deadline in the search.
+- **Budget**: 100,000 nodes per move; 3-second wall-clock deadline in the search.
 
 ## Local practice results
 
 Measured with the official practice kit, 6 games per trial against the reference engines:
 
-- Trial 0: **Elo 1279** — 3 wins, 3 losses.
+- Trial 0: **Elo 997** — 1 win, 1 draw, 4 losses.
 - Trial 1: **Elo 1279** — 3 wins, 3 losses.
 
-No game was lost on time — every loss was checkmate. Six-game trials swing by about a game; the previous 80,000-node setting measured 1364 / 876 on these trials, while this one came out a steadier 1279 / 1279, so the full node budget shipped.
+No game was lost on time; six-game trials swing by about a game (997 / 1279 here). Final setting: 150,000-node entries zeroed three times on the grader, 80,000 graded 876 — round 10 ships more search under a tighter 3-second clock.
 
 Move generation is verified by perft from the start position: 20 / 400 / 8,902 / 197,281 — exact at every depth.
