@@ -1,6 +1,6 @@
-import os,json,urllib.request as U
-H={2:[-33,-31,-18,-14,14,18,31,33],3:[-17,-15,15,17],4:[-16,-1,1,16],5:[-17,-16,-15,-1,1,15,16,17]}
-H[6]=H[5]
+import os,json,time,urllib.request as U
+H={2:[-33,-31,-18,-14,14,18,31,33],3:[-17,-15,15,17],4:[-16,-1,1,16]}
+H[5]=H[3]+H[4];H[6]=H[5]
 PV=[0,100,320,330,500,900,0]
 FL="abcdefgh"
 def MK(s):
@@ -35,7 +35,7 @@ def G(st,co):
   t=p-6*T
   if t==1:
    dr=16-32*T;one=s+dr;pz=one>>4 in(0,7);tg=[]
-   if not co and not B[one]:
+   if not B[one]:
     tg.append(one)
     if s>>4==1+5*T and not B[s+2*dr]:ap(s|(s+2*dr)<<7)
    for df in(-1,1):
@@ -83,7 +83,7 @@ def AP(st,u):
 def S(st,d,a,b,pl):
  global ND,RB
  ND+=1
- if ND>BG:raise Exception
+ if ND>BG or ND&7<1 and time.time()>D:1/0
  B,T,C,E,K,V=st
  ky=(bytes(B),T);e=TT.get(ky)
  if e and e[0]>=d and pl and(not a<e[1]<b):return e[1]
@@ -117,8 +117,8 @@ def S(st,d,a,b,pl):
  TT[ky]=d,bs,bm
  return bs
 def CH(bg):
- global ND,BG,RB
- BG=bg;ND=RB=0
+ global ND,BG,RB,D
+ BG=bg;ND=RB=0;D=time.time()+7
  d=1
  while d<65:
   pv=RB
@@ -128,20 +128,22 @@ def CH(bg):
  return RB or None
 def CU(g):
  global GS;GS=ST()
+ L=g["legal_moves"]
  for u in g["moves"]:GS=AP(GS,u)
  try:
   m=CH(150000);u=UC(m)if m else""
-  if u in g["legal_moves"]:return u
+  if u in L:return u
  except:pass
- return g["legal_moves"][0]
+ return L[0]
 def P(p,b):
  return json.loads(U.urlopen(U.Request(os.environ["MAKEFUN_ENV_URL"]+p,data=json.dumps(b).encode()),timeout=120).read())
 def main():
  g={}
  while 1:
   try:
-   if g.get("status")=="done":return
-   if g.get("status")=="your_move":g=P("/move",{"game":g["game"],"move":CU(g)})
+   s=g.get("status")
+   if s=="done":return
+   if s=="your_move":g=P("/move",{"game":g["game"],"move":CU(g)})
    else:g=P("/game",{})
   except:g={}
 main()
